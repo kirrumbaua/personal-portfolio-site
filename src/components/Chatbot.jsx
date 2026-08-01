@@ -7,6 +7,72 @@ import { playSound } from '../utils/siteSounds';
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 const GROQ_MODEL = 'llama-3.1-8b-instant';
 
+// Lightweight Zero-Dependency Markdown Renderer for AI responses
+function FormattedText({ text }) {
+  if (!text) return null;
+
+  const paragraphs = text.split(/\n\n+/);
+
+  return (
+    <div className="space-y-2">
+      {paragraphs.map((para, pIndex) => {
+        const lines = para.split('\n').filter(l => l.trim() !== '');
+        
+        // Check if lines are bullet list items (starting with * or -)
+        const isList = lines.length > 0 && lines.some(line => /^\s*[*|-]\s+/.test(line.trim()));
+
+        if (isList) {
+          return (
+            <ul key={pIndex} className="list-disc pl-4 space-y-1 my-1">
+              {lines.map((line, lIndex) => {
+                const cleanLine = line.replace(/^\s*[*|-]\s+/, '');
+                return (
+                  <li key={lIndex}>
+                    {parseInlineFormatting(cleanLine)}
+                  </li>
+                );
+              })}
+            </ul>
+          );
+        }
+
+        return (
+          <p key={pIndex} className="leading-relaxed">
+            {lines.map((line, lIndex) => (
+              <React.Fragment key={lIndex}>
+                {lIndex > 0 && <br />}
+                {parseInlineFormatting(line)}
+              </React.Fragment>
+            ))}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
+function parseInlineFormatting(str) {
+  // Matches **bold**, *italic*, `code`
+  const parts = str.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`)/g);
+
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
+      return <strong key={index} className="font-semibold text-zinc-900 dark:text-zinc-100">{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
+      return <em key={index} className="italic">{part.slice(1, -1)}</em>;
+    }
+    if (part.startsWith('`') && part.endsWith('`') && part.length > 2) {
+      return (
+        <code key={index} className="px-1 py-0.5 rounded bg-zinc-200/70 dark:bg-zinc-700/70 font-mono text-[11px]">
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+    return part;
+  });
+}
+
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
@@ -235,7 +301,7 @@ export function Chatbot() {
                       : "bg-zinc-100 dark:bg-zinc-800/80 text-zinc-800 dark:text-zinc-200 rounded-tl-xs border border-zinc-200/50 dark:border-zinc-700/50"
                   )}
                 >
-                  {msg.content}
+                  <FormattedText text={msg.content} />
                 </div>
               </div>
             ))}
@@ -247,7 +313,7 @@ export function Chatbot() {
                   <img src="/favicon.png" alt="Kurt" className="w-full h-full object-cover" />
                 </div>
                 <div className="px-3.5 py-2.5 rounded-2xl rounded-tl-xs bg-zinc-100 dark:bg-zinc-800/80 text-zinc-800 dark:text-zinc-200 border border-zinc-200/50 dark:border-zinc-700/50 leading-relaxed text-[12.5px]">
-                  {displayedText || "..."}
+                  <FormattedText text={displayedText || "..."} />
                   {/* Claude Style Typewriter Pulse Cursor */}
                   <span className="inline-block w-1.5 h-3.5 bg-zinc-900 dark:bg-zinc-100 animate-pulse ml-0.5 align-middle" />
                 </div>
