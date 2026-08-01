@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@300..600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Geist Pixel';
+  src: url('https://cdn.jsdelivr.net/gh/vercel/geist-pixel-font@main/fonts/webfonts/GeistPixel-Square.woff2') format('woff2');
+  font-display: swap;
+}
+
+:root {
+  --bg: 255 255 255;
+  --ink: 10 10 10;
+  --text-main: 24 24 27;
+  --text-muted: 113 113 122;
+  --text-subtle: 161 161 170;
+  --card-bg: 255 255 255;
+  --card-hover: 250 250 250;
+  --card-border: 228 228 231;
+  --badge-bg: 244 244 245;
+  --badge-text: 63 63 70;
+  --badge-border: 228 228 231;
+  --halftone: rgba(10, 10, 10, 0.9);
+  --sel-bg: #0a0a0a;
+  --sel-fg: #ffffff;
+}
+
+html.dark {
+  --bg: 12 12 15;
+  --ink: 250 250 250;
+  --text-main: 244 244 245;
+  --text-muted: 161 161 170;
+  --text-subtle: 113 113 122;
+  --card-bg: 24 24 27;
+  --card-hover: 39 39 42;
+  --card-border: 39 39 42;
+  --badge-bg: 39 39 42;
+  --badge-text: 228 228 231;
+  --badge-border: 63 63 70;
+  --halftone: rgba(244, 244, 245, 0.35);
+  --sel-bg: #fafafa;
+  --sel-fg: #0a0a0a;
+  color-scheme: dark;
+}
+
+html {
+  background-color: rgb(var(--bg));
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: rgb(var(--bg));
+  color: rgb(var(--ink));
+  @apply font-sans antialiased;
+}
+
+::selection {
+  background: var(--sel-bg);
+  color: var(--sel-fg);
+}
+
+.font-pixel {
+  font-family: 'Geist Pixel', 'Geist Mono', monospace;
+}
+
+/* Halftone Textures */
+.halftone, html.dark .halftone {
+  background-image: radial-gradient(circle at center, var(--halftone) 1px, transparent 1.6px);
+  background-size: 8px 8px;
+}
+.halftone-white {
+  background-image: radial-gradient(circle at center, rgb(var(--bg)) 1px, transparent 1.5px);
+  background-size: 5px 5px;
+}
+.halftone-dense {
+  background-size: 6px 6px;
+}
+.halftone-wide {
+  background-size: 13px 13px;
+}
+
+/* CSS Masks */
+.mask-tr {
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 100% 0%, #000 0%, transparent 65%);
+  mask-image: radial-gradient(ellipse 80% 80% at 100% 0%, #000 0%, transparent 65%);
+}
+.mask-bl {
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 0% 100%, #000 0%, transparent 65%);
+  mask-image: radial-gradient(ellipse 80% 80% at 0% 100%, #000 0%, transparent 65%);
+}
+.mask-up {
+  -webkit-mask-image: linear-gradient(to top, #000, transparent 85%);
+  mask-image: linear-gradient(to top, #000, transparent 85%);
+}
+
+/* View Transitions API (Radial Circular Wipe Theme Transition) */
+::view-transition-old(root), ::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Entrance Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
